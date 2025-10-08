@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>700</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>学生日程管理系统</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QLabel" name="titleLabel">
+      <property name="styleSheet">
+       <string>font-size: 18px; font-weight: bold; margin: 10px;</string>
+      </property>
+      <property name="text">
+       <string>学生日程管理系统</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignmentFlag::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="mainLayout">
+      <item>
+       <layout class="QVBoxLayout" name="leftLayout"/>
+      </item>
+      <item>
+       <layout class="QVBoxLayout" name="rightLayout">
+        <item>
+         <widget class="ScheduleView" name="scheduleView" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>600</width>
+            <height>400</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="loadDataAction"/>
+    <addaction name="saveDataAction"/>
+    <addaction name="separator"/>
+    <addaction name="exitAction"/>
+   </widget>
+   <widget class="QMenu" name="editMenu">
+    <property name="title">
+     <string>编辑</string>
+    </property>
+    <addaction name="addEventAction"/>
+    <addaction name="importProfessorAction"/>
+    <addaction name="importStudentCoursesAction"/>
+   </widget>
+   <widget class="QMenu" name="viewMenu">
+    <property name="title">
+     <string>查看</string>
+    </property>
+    <addaction name="showScheduleAction"/>
+    <addaction name="calculateAction"/>
+   </widget>
+   <addaction name="fileMenu"/>
+   <addaction name="editMenu"/>
+   <addaction name="viewMenu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>主工具栏</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="addEventAction"/>
+   <addaction name="importProfessorAction"/>
+   <addaction name="importStudentCoursesAction"/>
+   <addaction name="calculateAction"/>
+   <addaction name="separator"/>
+   <addaction name="loadDataAction"/>
+   <addaction name="saveDataAction"/>
+  </widget>
+  <action name="loadDataAction">
+   <property name="text">
+    <string>加载数据</string>
+   </property>
+  </action>
+  <action name="saveDataAction">
+   <property name="text">
+    <string>保存数据</string>
+   </property>
+  </action>
+  <action name="exitAction">
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </action>
+  <action name="addEventAction">
+   <property name="text">
+    <string>添加日程</string>
+   </property>
+  </action>
+  <action name="importProfessorAction">
+   <property name="text">
+    <string>导入教师时间</string>
+   </property>
+  </action>
+  <action name="importStudentCoursesAction">
+   <property name="text">
+    <string>导入学生课程</string>
+   </property>
+  </action>
+  <action name="showScheduleAction">
+   <property name="text">
+    <string>显示日程</string>
+   </property>
+  </action>
+  <action name="calculateAction">
+   <property name="text">
+    <string>计算可用时间</string>
+   </property>
+  </action>
+  <action name="separator">
+   <property name="text">
+    <string>separator</string>
+   </property>
+   <property name="separator" stdset="0">
+    <bool>true</bool>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ScheduleView</class>
+   <extends>QWidget</extends>
+   <header>ui/ScheduleView.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>addEventAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_addEventBtn_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>importProfessorAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_importProfessorBtn_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>importStudentCoursesAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_importStudentCoursesBtn_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>calculateAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_calculateBtn_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>loadDataAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_loadDataBtn_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>saveDataAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_saveDataBtn_clicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>exitAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_exitAction_triggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>showScheduleAction</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>on_showScheduleAction_triggered()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scheduleView</sender>
+   <signal>weekChanged(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onWeekChanged(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>scheduleView</sender>
+   <signal>eventDoubleClicked(int)</signal>
+   <receiver>MainWindow</receiver>
+   <slot>onEventDoubleClicked(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>on_addEventBtn_clicked()</slot>
+  <slot>on_importProfessorBtn_clicked()</slot>
+  <slot>on_importStudentCoursesBtn_clicked()</slot>
+  <slot>on_calculateBtn_clicked()</slot>
+  <slot>on_loadDataBtn_clicked()</slot>
+  <slot>on_saveDataBtn_clicked()</slot>
+  <slot>on_exitAction_triggered()</slot>
+  <slot>on_showScheduleAction_triggered()</slot>
+  <slot>onWeekChanged(int)</slot>
+  <slot>onEventDoubleClicked(int)</slot>
+ </slots>
+</ui>

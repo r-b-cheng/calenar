@@ -1,0 +1,147 @@
+#include "ScheduleView.h"
+#include <QHeaderView>
+#include <QMessageBox>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+
+ScheduleView::ScheduleView(QWidget* parent)
+    : QWidget(parent), currentWeekOffset(0) {
+    setupUI();
+}
+
+ScheduleView::~ScheduleView() {
+}
+
+void ScheduleView::setupUI() {
+    QVBoxLayout* mainLayout = new QVBoxLayout(this);
+
+    // 周切换控制栏
+    QHBoxLayout* controlLayout = new QHBoxLayout();
+    prevWeekButton = new QPushButton(QString::fromUtf8("上一周"), this);
+    nextWeekButton = new QPushButton(QString::fromUtf8("下一周"), this);
+    weekLabel = new QLabel(QString::fromUtf8("当前周"), this);
+    weekLabel->setAlignment(Qt::AlignCenter);
+
+    controlLayout->addWidget(prevWeekButton);
+    controlLayout->addWidget(weekLabel, 1);
+    controlLayout->addWidget(nextWeekButton);
+
+    // 创建表格视图
+    tableView = new QTableView(this);
+    model = new QStandardItemModel(24, 8, this);  // 24小时 x 8列（时间+7天）
+
+    // 设置表头
+    QStringList headers;
+    headers << QString::fromUtf8("时间")
+            << QString::fromUtf8("周一") << QString::fromUtf8("周二")
+            << QString::fromUtf8("周三") << QString::fromUtf8("周四")
+            << QString::fromUtf8("周五") << QString::fromUtf8("周六")
+            << QString::fromUtf8("周日");
+    model->setHorizontalHeaderLabels(headers);
+
+    // 填充时间列
+    for (int i = 0; i < 24; ++i) {
+        QString timeStr = QString("%1:00").arg(i, 2, 10, QChar('0'));
+        model->setItem(i, 0, new QStandardItem(timeStr));
+    }
+
+    tableView->setModel(model);
+    tableView->horizontalHeader()->setStretchLastSection(true);
+    tableView->verticalHeader()->setVisible(false);
+    tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    // 布局
+    mainLayout->addLayout(controlLayout);
+    mainLayout->addWidget(tableView);
+
+    setLayout(mainLayout);
+
+    // 连接信号
+    connect(prevWeekButton, &QPushButton::clicked, this, &ScheduleView::onPrevWeekClicked);
+    connect(nextWeekButton, &QPushButton::clicked, this, &ScheduleView::onNextWeekClicked);
+    connect(tableView, &QTableView::doubleClicked, this, &ScheduleView::onCellDoubleClicked);
+
+    updateWeekLabel();
+}
+
+void ScheduleView::updateWeekLabel() {
+    if (currentWeekOffset == 0) {
+        weekLabel->setText(QString::fromUtf8("本周"));
+    } else if (currentWeekOffset > 0) {
+        weekLabel->setText(QString::fromUtf8("未来第 %1 周").arg(currentWeekOffset));
+    } else {
+        weekLabel->setText(QString::fromUtf8("过去第 %1 周").arg(-currentWeekOffset));
+    }
+}
+
+void ScheduleView::setWeekOffset(int offset) {
+    currentWeekOffset = offset;
+    updateWeekLabel();
+    emit weekChanged(offset);
+}
+
+void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
+    currentEvents = events;
+    
+    // 清空表格（除了时间列）
+    for (int row = 0; row < 24; ++row) {
+        for (int col = 1; col <= 7; ++col) {
+            model->setItem(row, col, new QStandardItem(""));
+        }
+    }
+
+    // 填充事件
+    for (const auto& event : events) {
+        int weekday = event.getWeekday();
+        if (weekday < 1 || weekday > 7) continue;
+
+        auto startTime = std::chrono::system_clock::to_time_t(event.getTimeSlot().getStartTime());
+        std::tm* start_tm = std::localtime(&startTime);
+        
+        int hour = start_tm->tm_hour;
+        if (hour < 0 || hour >= 24) continue;
+
+        QString displayText = QString::fromUtf8(event.getEventName().c_str());
+        if (!event.getLocation().empty()) {
+            displayText += "\n@" + QString::fromUtf8(event.getLocation().c_str());
+        }
+
+        QStandardItem* item = new QStandardItem(displayText);
+        item->setData(event.getId(), Qt::UserRole);
+        
+        // 根据是否为课程设置不同颜色
+        if (event.getTimeSlot().getIsCourse()) {
+            item->setBackground(QColor(173, 216, 230));  // 浅蓝色
+        } else {
+            item->setBackground(QColor(255, 255, 224));  // 浅黄色
+        }
+
+        model->setItem(hour, weekday, item);
+    }
+}
+
+int ScheduleView::getCurrentWeekOffset() const {
+    return currentWeekOffset;
+}
+
+void ScheduleView::onPrevWeekClicked() {
+    setWeekOffset(currentWeekOffset - 1);
+}
+
+void ScheduleView::onNextWeekClicked() {
+    setWeekOffset(currentWeekOffset + 1);
+}
+
+void ScheduleView::onCellDoubleClicked(const QModelIndex& index) {
+    if (!index.isValid() || index.column() == 0) return;
+
+    QStandardItem* item = model->itemFromIndex(index);
+    if (item && item->text().isEmpty()) return;
+
+    int eventId = item->data(Qt::UserRole).toInt();
+    if (eventId > 0) {
+        emit eventDoubleClicked(eventId);
+    }
+}
+
