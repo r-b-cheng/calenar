@@ -1,6 +1,7 @@
 #include "ScheduleView.h"
 #include <QHeaderView>
 #include <QMessageBox>
+#include <QDate>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -50,7 +51,8 @@ void ScheduleView::setupUI() {
     }
 
     tableView->setModel(model);
-    tableView->horizontalHeader()->setStretchLastSection(true);
+    tableView->horizontalHeader()->setStretchLastSection(false);
+    tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     tableView->verticalHeader()->setVisible(false);
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
