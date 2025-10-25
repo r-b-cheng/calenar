@@ -1,0 +1,2 @@
+1. 目前的loaddata和storedata是没有问题的，只是将保存的数据放到了D:\project_test\qt5\build\Desktop_Qt_6_9_3_MinGW_64_bit-Debug\bin\data_storage中
+2. 我现在正在添加在主界面上显示日期的功能

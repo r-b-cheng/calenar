@@ -4,6 +4,7 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
+#include <QDate>
 
 ScheduleView::ScheduleView(QWidget* parent)
     : QWidget(parent), currentWeekOffset(0) {
@@ -33,11 +34,14 @@ void ScheduleView::setupUI() {
 
     // 设置表头
     QStringList headers;
-    headers << QString::fromUtf8("时间")
-            << QString::fromUtf8("周一") << QString::fromUtf8("周二")
-            << QString::fromUtf8("周三") << QString::fromUtf8("周四")
-            << QString::fromUtf8("周五") << QString::fromUtf8("周六")
-            << QString::fromUtf8("周日");
+    headers << QString::fromUtf8("时间");
+    
+    // 添加带日期的星期列头
+    QStringList weekHeaders = getWeekHeaders();
+    for (int i = 0; i < 7; ++i) {
+        headers << weekHeaders[i];
+    }
+    
     model->setHorizontalHeaderLabels(headers);
 
     // 填充时间列
@@ -77,6 +81,16 @@ void ScheduleView::updateWeekLabel() {
 
 void ScheduleView::setWeekOffset(int offset) {
     currentWeekOffset = offset;
+    
+    // 更新表头
+    QStringList headers;
+    headers << QString::fromUtf8("时间");
+    QStringList weekHeaders = getWeekHeaders();
+    for (int i = 0; i < 7; ++i) {
+        headers << weekHeaders[i];
+    }
+    model->setHorizontalHeaderLabels(headers);
+    
     updateWeekLabel();
     emit weekChanged(offset);
 }
@@ -143,5 +157,35 @@ void ScheduleView::onCellDoubleClicked(const QModelIndex& index) {
     if (eventId > 0) {
         emit eventDoubleClicked(eventId);
     }
+}
+
+QStringList ScheduleView::getWeekHeaders() {
+    QStringList headers;
+    QStringList weekNames = {QString::fromUtf8("周一"), QString::fromUtf8("周二"), 
+                            QString::fromUtf8("周三"), QString::fromUtf8("周四"), 
+                            QString::fromUtf8("周五"), QString::fromUtf8("周六"), 
+                            QString::fromUtf8("周日")};
+    
+    // 获取当前日期
+    QDate today = QDate::currentDate();
+    
+    // 计算当前周的开始日期（周一）
+    int daysToMonday = today.dayOfWeek() - 1;  // Qt中周一=1，所以减1
+    QDate weekStart = today.addDays(-daysToMonday);
+    
+    // 根据周偏移量调整
+    QDate targetWeekStart = weekStart.addDays(currentWeekOffset * 7);
+    
+    // 生成一周的日期
+    for (int i = 0; i < 7; ++i) {
+        QDate currentDate = targetWeekStart.addDays(i);
+        QString header = QString("%1\n(%2/%3)")
+                        .arg(weekNames[i])
+                        .arg(currentDate.month())
+                        .arg(currentDate.day());
+        headers << header;
+    }
+    
+    return headers;
 }
 

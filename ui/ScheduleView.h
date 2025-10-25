@@ -26,6 +26,7 @@ private:
 
     void setupUI();
     void updateWeekLabel();
+    QStringList getWeekHeaders();
 
 public:
     explicit ScheduleView(QWidget* parent = nullptr);

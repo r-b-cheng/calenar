@@ -21,6 +21,8 @@ public:
 private slots:
     void onBrowseClicked();
 
+
+
 private:
     Ui::ImportStudentCoursesDialog *ui;
 };
