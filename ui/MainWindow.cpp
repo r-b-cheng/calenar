@@ -276,16 +276,15 @@ void MainWindow::showEventDetails(int eventId) {
     }
 
     if (foundEvent) {
+        // 使用QDateTime来正确显示时间，避免std::localtime的问题
         auto startTime = std::chrono::system_clock::to_time_t(foundEvent->getTimeSlot().getStartTime());
         auto endTime = std::chrono::system_clock::to_time_t(foundEvent->getTimeSlot().getEndTime());
         
-        std::tm* start_tm = std::localtime(&startTime);
-        std::tm* end_tm = std::localtime(&endTime);
+        QDateTime startDateTime = QDateTime::fromSecsSinceEpoch(startTime);
+        QDateTime endDateTime = QDateTime::fromSecsSinceEpoch(endTime);
         
-        char startBuffer[100];
-        char endBuffer[100];
-        std::strftime(startBuffer, sizeof(startBuffer), "%Y-%m-%d %H:%M", start_tm);
-        std::strftime(endBuffer, sizeof(endBuffer), "%Y-%m-%d %H:%M", end_tm);
+        QString startStr = startDateTime.toString("yyyy-MM-dd hh:mm");
+        QString endStr = endDateTime.toString("yyyy-MM-dd hh:mm");
         
         QString details = QString::fromUtf8(
             "事件: %1\n"
@@ -296,8 +295,8 @@ void MainWindow::showEventDetails(int eventId) {
             "备注: %6"
         ).arg(QString::fromUtf8(foundEvent->getEventName().c_str()))
          .arg(QString::fromUtf8(foundEvent->getLocation().c_str()))
-         .arg(QString::fromUtf8(startBuffer))
-         .arg(QString::fromUtf8(endBuffer))
+         .arg(startStr)
+         .arg(endStr)
          .arg(foundEvent->getTimeSlot().getIsCourse() ? QString::fromUtf8("课程") : QString::fromUtf8("个人日程"))
          .arg(QString::fromUtf8(foundEvent->getDescription().c_str()));
         

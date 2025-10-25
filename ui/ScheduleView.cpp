@@ -106,21 +106,21 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
         if (weekday < 1 || weekday > 7) continue;
 
         auto startTime = std::chrono::system_clock::to_time_t(event.getTimeSlot().getStartTime());
-        auto endTime = std::chrono::system_clock::to_time_t(event.getTimeSlot().getEndTime());
         
         std::tm* start_tm = std::localtime(&startTime);
-        std::tm* end_tm = std::localtime(&endTime);
-        
         int startHour = start_tm->tm_hour;
-        int endHour = end_tm->tm_hour;
         
-        // 添加调试信息
-        qDebug() << "Event:" << QString::fromUtf8(event.getEventName().c_str());
-        qDebug() << "Start hour:" << startHour << "End hour:" << endHour;
-        qDebug() << "Duration:" << endHour - startHour;
-        qDebug() << "Weekday:" << weekday;
+        // 计算持续时间（小时）- 使用chrono直接计算
+        auto duration = std::chrono::duration_cast<std::chrono::hours>(event.getTimeSlot().getEndTime() - event.getTimeSlot().getStartTime());
+        int durationHours = duration.count();
         
-        if (startHour < 0 || startHour >= 24 || endHour < 0 || endHour >= 24) continue;
+        // 确保至少显示1小时
+        if (durationHours == 0) {
+            durationHours = 1;
+        }
+        
+        
+        if (startHour < 0 || startHour >= 24) continue;
 
         QString displayText = QString::fromUtf8(event.getEventName().c_str());
         if (!event.getLocation().empty()) {
@@ -140,14 +140,9 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
 
         model->setItem(startHour, weekday, item);
         
-        // 合并单元格：从startHour到endHour-1
-        int duration = endHour - startHour;
-        qDebug() << "Setting span - Row:" << startHour << "Col:" << weekday << "RowSpan:" << duration;
-        if (duration > 1) {
-            tableView->setSpan(startHour, weekday, duration, 1);
-            qDebug() << "Span set successfully";
-        } else {
-            qDebug() << "No span needed (duration <= 1)";
+        // 合并单元格：使用精确计算的持续时间
+        if (durationHours > 1) {
+            tableView->setSpan(startHour, weekday, durationHours, 1);
         }
     }
 }

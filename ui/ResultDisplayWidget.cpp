@@ -1,6 +1,7 @@
 #include "ResultDisplayWidget.h"
 #include "ui_ResultDisplayWidget.h"
 #include <ctime>
+#include <QDateTime>
 
 ResultDisplayWidget::ResultDisplayWidget(QWidget* parent)
     : QDialog(parent)
@@ -37,19 +38,18 @@ void ResultDisplayWidget::setResults(const QString& professorName,
         auto startTime = std::chrono::system_clock::to_time_t(slot.getStartTime());
         auto endTime = std::chrono::system_clock::to_time_t(slot.getEndTime());
         
-        std::tm* start_tm = std::localtime(&startTime);
-        std::tm* end_tm = std::localtime(&endTime);
+        // 使用QDateTime来正确显示时间，避免std::localtime的问题
+        QDateTime startDateTime = QDateTime::fromSecsSinceEpoch(startTime);
+        QDateTime endDateTime = QDateTime::fromSecsSinceEpoch(endTime);
         
-        char startBuffer[100];
-        char endBuffer[100];
-        std::strftime(startBuffer, sizeof(startBuffer), "%Y-%m-%d %H:%M", start_tm);
-        std::strftime(endBuffer, sizeof(endBuffer), "%Y-%m-%d %H:%M", end_tm);
+        QString startStr = startDateTime.toString("yyyy-MM-dd hh:mm");
+        QString endStr = endDateTime.toString("yyyy-MM-dd hh:mm");
 
         int row = ui->resultTable->rowCount();
         ui->resultTable->insertRow(row);
         
-        ui->resultTable->setItem(row, 0, new QTableWidgetItem(QString::fromUtf8(startBuffer)));
-        ui->resultTable->setItem(row, 1, new QTableWidgetItem(QString::fromUtf8(endBuffer)));
+        ui->resultTable->setItem(row, 0, new QTableWidgetItem(startStr));
+        ui->resultTable->setItem(row, 1, new QTableWidgetItem(endStr));
         ui->resultTable->setItem(row, 2, new QTableWidgetItem(QString::number(slot.durationMinutes()) + QString::fromUtf8("分钟")));
         ui->resultTable->setItem(row, 3, new QTableWidgetItem(professorEmail));
     }
