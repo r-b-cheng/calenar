@@ -1,4 +1,6 @@
 #include "ScheduleEvent.h"
+#include <ctime>
+#include <chrono>
 
 ScheduleEvent::ScheduleEvent()
     : id(0), weekday(MONDAY) {
@@ -57,5 +59,13 @@ void ScheduleEvent::setWeekday(int day) {
 
 void ScheduleEvent::setTimeSlot(const TimeSlot& slot) {
     timeSlot = slot;
+}
+
+// 辅助函数实现
+int ScheduleEvent::getWeekOffset() const {
+    auto start = timeSlot.getStartTime();
+    std::time_t tt = std::chrono::system_clock::to_time_t(start);
+    std::tm* tmv = std::localtime(&tt);  // 只取一次
+    return (tmv->tm_mday - 1) / 7;       // 仅使用 tm_mday
 }
 

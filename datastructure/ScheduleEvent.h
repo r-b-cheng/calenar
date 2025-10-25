@@ -43,6 +43,9 @@ public:
     void setDescription(const std::string& desc);
     void setWeekday(int day);
     void setTimeSlot(const TimeSlot& slot);
+    
+    // 辅助函数
+    int getWeekOffset() const;  // 当月周序，从0开始
 };
 
 #endif // SCHEDULEEVENT_H

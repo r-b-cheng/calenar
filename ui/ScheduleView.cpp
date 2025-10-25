@@ -102,6 +102,11 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
 
     // 填充事件
     for (const auto& event : events) {
+        // 使用辅助函数进行周过滤
+        if (event.getWeekOffset() != currentWeekOffset) {
+            continue;
+        }
+        
         int weekday = event.getWeekday();
         if (weekday < 1 || weekday > 7) continue;
 
