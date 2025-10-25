@@ -57,87 +57,41 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="weekdayLabel">
-       <property name="text">
-        <string>星期:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QComboBox" name="weekdayCombo">
-       <item>
-        <property name="text">
-         <string>周一</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>周二</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>周三</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>周四</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>周五</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>周六</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>周日</string>
-        </property>
-       </item>
-      </widget>
-     </item>
-     <item row="4" column="0">
       <widget class="QLabel" name="startTimeLabel">
        <property name="text">
         <string>开始时间:</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="3" column="1">
       <widget class="QDateTimeEdit" name="startTimeEdit">
        <property name="displayFormat">
         <string>yyyy-MM-dd hh:mm</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="4" column="0">
       <widget class="QLabel" name="endTimeLabel">
        <property name="text">
         <string>结束时间:</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="4" column="1">
       <widget class="QDateTimeEdit" name="endTimeEdit">
        <property name="displayFormat">
         <string>yyyy-MM-dd hh:mm</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="isCourseLabel">
        <property name="text">
-        <string></string>
+        <string/>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="5" column="1">
       <widget class="QCheckBox" name="isCourseCheck">
        <property name="text">
         <string>是否为课程/办公时间</string>
@@ -166,19 +120,39 @@
    </item>
   </layout>
  </widget>
+ <resources/>
  <connections>
   <connection>
    <sender>okButton</sender>
    <signal>clicked()</signal>
    <receiver>AddEventDialog</receiver>
    <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
   <connection>
    <sender>cancelButton</sender>
    <signal>clicked()</signal>
    <receiver>AddEventDialog</receiver>
    <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>20</x>
+     <y>20</y>
+    </hint>
+   </hints>
   </connection>
  </connections>
 </ui>
-

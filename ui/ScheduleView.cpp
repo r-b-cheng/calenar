@@ -2,6 +2,7 @@
 #include <QHeaderView>
 #include <QMessageBox>
 #include <QDate>
+#include <QDebug>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -95,6 +96,9 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
             model->setItem(row, col, new QStandardItem(""));
         }
     }
+    
+    // 重置所有合并的单元格
+    tableView->clearSpans();
 
     // 填充事件
     for (const auto& event : events) {
@@ -102,16 +106,28 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
         if (weekday < 1 || weekday > 7) continue;
 
         auto startTime = std::chrono::system_clock::to_time_t(event.getTimeSlot().getStartTime());
-        std::tm* start_tm = std::localtime(&startTime);
+        auto endTime = std::chrono::system_clock::to_time_t(event.getTimeSlot().getEndTime());
         
-        int hour = start_tm->tm_hour;
-        if (hour < 0 || hour >= 24) continue;
+        std::tm* start_tm = std::localtime(&startTime);
+        std::tm* end_tm = std::localtime(&endTime);
+        
+        int startHour = start_tm->tm_hour;
+        int endHour = end_tm->tm_hour;
+        
+        // 添加调试信息
+        qDebug() << "Event:" << QString::fromUtf8(event.getEventName().c_str());
+        qDebug() << "Start hour:" << startHour << "End hour:" << endHour;
+        qDebug() << "Duration:" << endHour - startHour;
+        qDebug() << "Weekday:" << weekday;
+        
+        if (startHour < 0 || startHour >= 24 || endHour < 0 || endHour >= 24) continue;
 
         QString displayText = QString::fromUtf8(event.getEventName().c_str());
         if (!event.getLocation().empty()) {
             displayText += "\n@" + QString::fromUtf8(event.getLocation().c_str());
         }
 
+        // 只在开始时间的位置创建事件项
         QStandardItem* item = new QStandardItem(displayText);
         item->setData(event.getId(), Qt::UserRole);
         
@@ -122,7 +138,17 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
             item->setBackground(QColor(255, 255, 224));  // 浅黄色
         }
 
-        model->setItem(hour, weekday, item);
+        model->setItem(startHour, weekday, item);
+        
+        // 合并单元格：从startHour到endHour-1
+        int duration = endHour - startHour;
+        qDebug() << "Setting span - Row:" << startHour << "Col:" << weekday << "RowSpan:" << duration;
+        if (duration > 1) {
+            tableView->setSpan(startHour, weekday, duration, 1);
+            qDebug() << "Span set successfully";
+        } else {
+            qDebug() << "No span needed (duration <= 1)";
+        }
     }
 }
 
