@@ -77,16 +77,8 @@
     <addaction name="importProfessorAction"/>
     <addaction name="importStudentCoursesAction"/>
    </widget>
-   <widget class="QMenu" name="viewMenu">
-    <property name="title">
-     <string>查看</string>
-    </property>
-    <addaction name="showScheduleAction"/>
-    <addaction name="calculateAction"/>
-   </widget>
    <addaction name="fileMenu"/>
    <addaction name="editMenu"/>
-   <addaction name="viewMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
@@ -104,7 +96,6 @@
    <addaction name="importStudentCoursesAction"/>
    <addaction name="calculateAction"/>
    <addaction name="separator"/>
-   <addaction name="loadDataAction"/>
    <addaction name="saveDataAction"/>
   </widget>
   <action name="loadDataAction">

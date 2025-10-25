@@ -4,7 +4,6 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
-#include <QDate>
 
 ScheduleView::ScheduleView(QWidget* parent)
     : QWidget(parent), currentWeekOffset(0) {
@@ -81,16 +80,6 @@ void ScheduleView::updateWeekLabel() {
 
 void ScheduleView::setWeekOffset(int offset) {
     currentWeekOffset = offset;
-    
-    // 更新表头
-    QStringList headers;
-    headers << QString::fromUtf8("时间");
-    QStringList weekHeaders = getWeekHeaders();
-    for (int i = 0; i < 7; ++i) {
-        headers << weekHeaders[i];
-    }
-    model->setHorizontalHeaderLabels(headers);
-    
     updateWeekLabel();
     emit weekChanged(offset);
 }
