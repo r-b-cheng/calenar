@@ -84,6 +84,19 @@ void ScheduleView::updateWeekLabel() {
 void ScheduleView::setWeekOffset(int offset) {
     currentWeekOffset = offset;
     updateWeekLabel();
+    
+    // 更新表头日期
+    QStringList headers;
+    headers << QString::fromUtf8("时间");
+    
+    // 添加带日期的星期列头
+    QStringList weekHeaders = getWeekHeaders();
+    for (int i = 0; i < 7; ++i) {
+        headers << weekHeaders[i];
+    }
+    
+    model->setHorizontalHeaderLabels(headers);
+    
     emit weekChanged(offset);
 }
 
@@ -103,7 +116,8 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
     // 填充事件
     for (const auto& event : events) {
         // 使用辅助函数进行周过滤
-        if (event.getWeekOffset() != currentWeekOffset) {
+        // 如果是课程，则在所有周都显示；否则只在特定周显示
+        if (!event.getTimeSlot().getIsCourse() && event.getWeekOffset() != currentWeekOffset) {
             continue;
         }
         
