@@ -90,7 +90,7 @@ int ScheduleEvent::getWeekOffset() const {
     QDate eventWeekMonday = eventDate.addDays(-eventDaysToMonday);
     
     // 计算两个周一之间的天数差，然后除以7得到周差
-    return (eventWeekMonday.daysTo(currentWeekMonday) / 7) * -1; // 负值表示未来，正值表示过去
+    return currentWeekMonday.daysTo(eventWeekMonday) / 7; // 正值表示未来，负值表示过去
 }
 
 
