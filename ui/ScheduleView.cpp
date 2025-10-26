@@ -117,6 +117,7 @@ void ScheduleView::setSchedule(const std::vector<ScheduleEvent>& events) {
     for (const auto& event : events) {
         // 使用辅助函数进行周过滤
         // 如果是课程，则在所有周都显示；否则只在特定周显示
+        // 修复：事件的周偏移是相对于系统当前周的，需要与当前显示周进行比较
         if (!event.getTimeSlot().getIsCourse() && event.getWeekOffset() != currentWeekOffset) {
             continue;
         }
