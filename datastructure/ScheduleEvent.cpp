@@ -1,6 +1,9 @@
 #include "ScheduleEvent.h"
 #include <ctime>
 #include <chrono>
+#include <QDate>
+
+
 
 ScheduleEvent::ScheduleEvent()
     : id(0), weekday(MONDAY) {
@@ -63,9 +66,31 @@ void ScheduleEvent::setTimeSlot(const TimeSlot& slot) {
 
 // 辅助函数实现
 int ScheduleEvent::getWeekOffset() const {
-    auto start = timeSlot.getStartTime();
-    std::time_t tt = std::chrono::system_clock::to_time_t(start);
-    std::tm* tmv = std::localtime(&tt);  // 只取一次
-    return (tmv->tm_mday - 1) / 7;       // 仅使用 tm_mday
+
+    // 获取事件的时间点
+    auto eventTime = timeSlot.getStartTime();
+    std::time_t eventTt = std::chrono::system_clock::to_time_t(eventTime);
+    std::tm* eventTm = std::localtime(&eventTt);
+    
+    // 获取当前时间
+    auto now = std::chrono::system_clock::now();
+    std::time_t nowTt = std::chrono::system_clock::to_time_t(now);
+    std::tm* nowTm = std::localtime(&nowTt);
+    
+    // 转换为日期对象以便计算
+    QDate eventDate(eventTm->tm_year + 1900, eventTm->tm_mon + 1, eventTm->tm_mday);
+    QDate nowDate(nowTm->tm_year + 1900, nowTm->tm_mon + 1, nowTm->tm_mday);
+    
+    // 计算当前日期所在周的周一
+    int daysToMonday = nowDate.dayOfWeek() - 1;  // Qt中周一=1
+    QDate currentWeekMonday = nowDate.addDays(-daysToMonday);
+    
+    // 计算事件日期所在周的周一
+    int eventDaysToMonday = eventDate.dayOfWeek() - 1;
+    QDate eventWeekMonday = eventDate.addDays(-eventDaysToMonday);
+    
+    // 计算两个周一之间的天数差，然后除以7得到周差
+    return (eventWeekMonday.daysTo(currentWeekMonday) / 7) * -1; // 负值表示未来，正值表示过去
 }
+
 
