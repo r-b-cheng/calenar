@@ -40,11 +40,13 @@ public:
 signals:
     void weekChanged(int newOffset);
     void eventDoubleClicked(int eventId);
+    void deleteEventRequested(int eventId);
 
 private slots:
     void onPrevWeekClicked();
     void onNextWeekClicked();
     void onCellDoubleClicked(const QModelIndex& index);
+    void onContextMenuRequested(const QPoint& pos);
 };
 
 #endif // SCHEDULEVIEW_H

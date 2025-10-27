@@ -35,6 +35,7 @@ private slots:
     // ScheduleView 相关槽函数（需要手动连接，因为是自定义信号）
     void onWeekChanged(int offset);
     void onEventDoubleClicked(int eventId);
+    void onDeleteEventRequested(int eventId);
 
 private:
     Ui::MainWindow *ui;

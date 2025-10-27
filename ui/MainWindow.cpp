@@ -15,6 +15,9 @@ MainWindow::MainWindow(QWidget* parent)
     
     ui->setupUi(this);
     
+    // 手动连接 ScheduleView 的删除信号
+    connect(ui->scheduleView, &ScheduleView::deleteEventRequested, this, &MainWindow::onDeleteEventRequested);
+    
     // 设置数据文件路径
     userDataPath = "data_storage/user_data.txt";
     professorDataPath = "data_storage/professor_data.txt";
@@ -301,5 +304,32 @@ void MainWindow::showEventDetails(int eventId) {
          .arg(QString::fromUtf8(foundEvent->getDescription().c_str()));
         
         QMessageBox::information(this, QString::fromUtf8("事件详情"), details);
+    }
+}
+
+void MainWindow::onDeleteEventRequested(int eventId) {
+    // 确认删除
+    int ret = QMessageBox::question(this, QString::fromUtf8("确认删除"), 
+                                   QString::fromUtf8("确定要删除这个事件吗？"),
+                                   QMessageBox::Yes | QMessageBox::No);
+    
+    if (ret != QMessageBox::Yes) return;
+    
+    // 从课程中查找并删除
+    bool found = dataManager.getUser().getCourses().removeEvent(eventId);
+    
+    // 如果在课程中没找到，从个人日程中查找并删除
+    if (!found) {
+        found = dataManager.getUser().getPersonalSchedule().removeEvent(eventId);
+    }
+    
+    if (found) {
+        updateScheduleView();
+        saveData();
+        QMessageBox::information(this, QString::fromUtf8("删除成功"), 
+                               QString::fromUtf8("事件已删除"));
+    } else {
+        QMessageBox::warning(this, QString::fromUtf8("删除失败"), 
+                           QString::fromUtf8("未找到指定事件"));
     }
 }

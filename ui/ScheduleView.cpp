@@ -3,6 +3,8 @@
 #include <QMessageBox>
 #include <QDate>
 #include <QDebug>
+#include <QMenu>
+#include <QAction>
 #include <ctime>
 #include <iomanip>
 #include <sstream>
@@ -56,6 +58,7 @@ void ScheduleView::setupUI() {
     tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
     tableView->verticalHeader()->setVisible(false);
     tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    tableView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     // 布局
     mainLayout->addLayout(controlLayout);
@@ -67,6 +70,7 @@ void ScheduleView::setupUI() {
     connect(prevWeekButton, &QPushButton::clicked, this, &ScheduleView::onPrevWeekClicked);
     connect(nextWeekButton, &QPushButton::clicked, this, &ScheduleView::onNextWeekClicked);
     connect(tableView, &QTableView::doubleClicked, this, &ScheduleView::onCellDoubleClicked);
+    connect(tableView, &QTableView::customContextMenuRequested, this, &ScheduleView::onContextMenuRequested);
 
     updateWeekLabel();
 }
@@ -219,5 +223,24 @@ QStringList ScheduleView::getWeekHeaders() {
     }
     
     return headers;
+}
+
+void ScheduleView::onContextMenuRequested(const QPoint& pos) {
+    QModelIndex index = tableView->indexAt(pos);
+    if (!index.isValid() || index.column() == 0) return;
+
+    QStandardItem* item = model->itemFromIndex(index);
+    if (!item || item->text().isEmpty()) return;
+
+    int eventId = item->data(Qt::UserRole).toInt();
+    if (eventId <= 0) return;
+
+    QMenu contextMenu(this);
+    QAction* deleteAction = contextMenu.addAction(QString::fromUtf8("删除事件"));
+    
+    QAction* selectedAction = contextMenu.exec(tableView->mapToGlobal(pos));
+    if (selectedAction == deleteAction) {
+        emit deleteEventRequested(eventId);
+    }
 }
 
