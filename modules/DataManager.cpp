@@ -57,6 +57,9 @@ bool DataManager::loadUserData(User& userData, const std::string& filePath) {
         return false;
     }
 
+    //加载前清空，避免重复累计
+    userData.getCourses().clear();
+    userData.getPersonalSchedule().clear();
     std::string line;
     std::string section;
     
