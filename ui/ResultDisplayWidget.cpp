@@ -10,7 +10,19 @@ ResultDisplayWidget::ResultDisplayWidget(QWidget* parent)
     
     // 设置表格属性
     ui->resultTable->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    ui->resultTable->horizontalHeader()->setStretchLastSection(true);
+    
+    // 设置列宽
+    ui->resultTable->setColumnWidth(0, 150);  // 开始时间列
+    ui->resultTable->setColumnWidth(1, 150);  // 结束时间列
+    ui->resultTable->setColumnWidth(2, 100);  // 持续时间列
+    ui->resultTable->setColumnWidth(3, 250);  // 教师信息列 - 增加宽度以显示完整邮箱
+    
+    // 设置表格自动调整列宽模式
+    ui->resultTable->horizontalHeader()->setStretchLastSection(false);
+    ui->resultTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
+    
+    // 调整窗口大小以适应内容
+    resize(700, 450);
 }
 
 ResultDisplayWidget::~ResultDisplayWidget() {
