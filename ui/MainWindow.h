@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QListWidgetItem>
+#include <QDateTime>
 #include "ScheduleView.h"
 #include "AddEventDialog.h"
 #include "ImportProfessorDialog.h"

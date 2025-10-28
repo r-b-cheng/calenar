@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "../datastructure/TimeSlot.h"
 #include <vector>
+#include <QTableWidgetItem>
 
 namespace Ui {
 class ResultDisplayWidget;
@@ -19,6 +20,9 @@ public:
     void setResults(const QString& professorName,
                    const QString& professorEmail,
                    const std::vector<TimeSlot>& availableSlots);
+
+private slots:
+    void onEmailItemDoubleClicked(QTableWidgetItem* item);
 
 private:
     Ui::ResultDisplayWidget *ui;
