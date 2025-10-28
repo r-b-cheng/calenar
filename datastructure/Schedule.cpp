@@ -8,6 +8,30 @@ void Schedule::addEvent(const ScheduleEvent& event) {
     events.push_back(event);
 }
 
+bool Schedule::addEventSafely(const ScheduleEvent& event, std::string& errorMsg) {
+    // 检查重复事件
+    for (const auto& existingEvent : events) {
+        // 检查名称、地点、星期和时间是否完全相同
+        if (existingEvent.getEventName() == event.getEventName() && 
+            existingEvent.getLocation() == event.getLocation() &&
+            existingEvent.getTimeSlot().getStartTime() == event.getTimeSlot().getStartTime() &&
+            existingEvent.getTimeSlot().getEndTime() == event.getTimeSlot().getEndTime()) {
+            errorMsg = "事件重复";
+            return false;
+        }
+        
+        // 检查时间冲突
+        if (existingEvent.getTimeSlot().isOverlappingWith(event.getTimeSlot())) {
+            errorMsg = "时间冲突";
+            return false;
+        }
+    }
+    
+    // 通过检查，添加事件
+    events.push_back(event);
+    return true;
+}
+
 bool Schedule::removeEvent(int eventId) {
     auto it = std::find_if(events.begin(), events.end(),
                           [eventId](const ScheduleEvent& e) {

@@ -4,6 +4,7 @@
 #include "ScheduleEvent.h"
 #include <vector>
 #include <chrono>
+#include <string>
 
 class Schedule {
 private:
@@ -14,6 +15,9 @@ public:
 
     // 添加新事件
     void addEvent(const ScheduleEvent& event);
+    
+    // 安全添加事件（检查冲突和重复）
+    bool addEventSafely(const ScheduleEvent& event, std::string& errorMsg);
     
     // 根据事件编号删除事件
     bool removeEvent(int eventId);

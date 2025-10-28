@@ -91,15 +91,27 @@ void MainWindow::on_addEventBtn_clicked() {
         ScheduleEvent event = dialog.getEvent();
         event.setId(nextEventId++);
         
+        std::string errorMsg;
+        bool success = false;
+        
         // 根据是否为课程添加到不同的日程
         if (event.getTimeSlot().getIsCourse()) {
-            dataManager.getUser().getCourses().addEvent(event);
+            success = dataManager.getUser().getCourses().addEventSafely(event, errorMsg);
         } else {
-            dataManager.getUser().getPersonalSchedule().addEvent(event);
+            success = dataManager.getUser().getPersonalSchedule().addEventSafely(event, errorMsg);
         }
         
-        updateScheduleView();
-        saveData();
+        if (success) {
+            updateScheduleView();
+            saveData();
+            QMessageBox::information(this, QString::fromUtf8("添加成功"), 
+                                   QString::fromUtf8("事件已成功添加"));
+        } else {
+            QMessageBox::warning(this, QString::fromUtf8("添加失败"), 
+                               QString::fromUtf8("无法添加事件: %1").arg(QString::fromStdString(errorMsg)));
+            // 回滚ID计数
+            nextEventId--;
+        }
     }
 }
 
@@ -121,18 +133,29 @@ void MainWindow::on_importStudentCoursesBtn_clicked() {
             
             // 将导入的课程添加到用户的课程日程中
             const auto& events = importedSchedule.getAllEvents();
+            int successCount = 0;
+            int skipCount = 0;
+            
             for (const auto& event : events) {
                 ScheduleEvent newEvent = event;
                 newEvent.setId(nextEventId++);
-                dataManager.getUser().getCourses().addEvent(newEvent);
+                
+                std::string errorMsg;
+                if (dataManager.getUser().getCourses().addEventSafely(newEvent, errorMsg)) {
+                    successCount++;
+                } else {
+                    skipCount++;
+                    // 回滚ID计数
+                    nextEventId--;
+                }
             }
             
             updateScheduleView();
             saveData();
             
-            QMessageBox::information(this, QString::fromUtf8("导入成功"),
-                                   QString::fromUtf8("成功导入 %1 个课程事件")
-                                   .arg(events.size()));
+            QMessageBox::information(this, QString::fromUtf8("导入结果"),
+                                   QString::fromUtf8("成功导入 %1 个课程事件，跳过 %2 个冲突或重复事件")
+                                   .arg(successCount).arg(skipCount));
             
         } catch (const std::exception& e) {
             QMessageBox::critical(this, QString::fromUtf8("导入错误"),
