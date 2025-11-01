@@ -1,0 +1,35 @@
+@startuml
+title Calculate Available Time
+
+actor Student
+participant MainWindow
+participant DataManager
+participant SchedulerLogic
+participant ResultDisplayWidget as ResultDialog
+
+Student -> MainWindow : click "Calculate Available Time"
+activate MainWindow
+MainWindow -> DataManager : list available professors
+activate DataManager
+DataManager --> MainWindow : professor names
+MainWindow -> Student : choose professor
+Student --> MainWindow : selected name
+MainWindow -> DataManager : getStudentSchedule()
+DataManager --> MainWindow : combined student events
+MainWindow -> DataManager : getProfessorSchedule(name)
+DataManager --> MainWindow : professor office hours
+deactivate DataManager
+MainWindow -> SchedulerLogic : findAvailableSlots(student, professor)
+activate SchedulerLogic
+SchedulerLogic --> MainWindow : free time slots
+deactivate SchedulerLogic
+MainWindow -> ResultDialog : show(professor, slots)
+activate ResultDialog
+ResultDialog -> ResultDialog : display available slots
+note right of ResultDialog
+  学生可双击邮箱地址以打开邮件客户端并自动跳转到发送页面
+end note
+deactivate ResultDialog
+deactivate MainWindow
+
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+title View Schedule
+
+actor Student
+participant MainWindow
+participant DataManager
+participant ScheduleView
+
+MainWindow -> DataManager : request combined schedule
+activate DataManager
+DataManager --> MainWindow : courses + personal events
+deactivate DataManager
+MainWindow -> ScheduleView : setSchedule(events)
+activate ScheduleView
+ScheduleView -> ScheduleView : render weekly grid
+deactivate ScheduleView
+
+opt 双击查看详情
+  Student -> MainWindow : 双击事件(eventId)
+  activate MainWindow
+  MainWindow -> DataManager : 信息请求(eventId)
+  activate DataManager
+  DataManager --> MainWindow : 返回详情信息
+  deactivate DataManager
+  MainWindow -> MainWindow : 显示详情
+  deactivate MainWindow
+
+end
+
+opt 右键删除事件
+  Student -> MainWindow : 右键(eventId)
+  MainWindow -> Student : 请求确认
+  Student --> MainWindow : 确认
+  activate MainWindow
+  MainWindow -> DataManager : removeEvent(eventId)
+  activate DataManager
+  DataManager --> MainWindow : 返回删除结果
+  deactivate DataManager
+  MainWindow -> ScheduleView : 刷新显示
+  activate ScheduleView
+  ScheduleView -> ScheduleView : 重新渲染
+  deactivate ScheduleView
+  deactivate MainWindow
+end
+@enduml

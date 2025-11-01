@@ -1,0 +1,66 @@
+@startuml
+title Schedule Manager Use Case Diagram
+
+left to right direction
+skinparam linetype polyline
+
+actor "Student" as Student
+
+rectangle "Schedule Manager" as System {
+  rectangle " " as ColLeft {
+    usecase "Add Personal Schedule" as UC_AddPersonal
+    usecase "Import Student Courses" as UC_ImportStudent
+    usecase "Import Professor Office Hours" as UC_ImportProfessor
+    usecase "View Schedule" as UC_ViewSchedule
+    usecase "Calculate Available Time" as UC_CalcAvailable
+  }
+  rectangle " " as ColRight {
+    usecase "Select CSV File" as UC_SelectCSV
+    usecase "Show Weekly View" as UC_ShowWeekView
+    usecase "Data Validation / Conflict Detection" as UC_Validation
+    usecase "Show Details" as UC_ShowDetails
+    usecase "Delete Schedule" as UC_DeleteSchedule
+    usecase "Open Mail Client" as UC_OpenMailClient
+  }
+}
+
+Student --> UC_AddPersonal
+Student --> UC_ImportStudent
+Student --> UC_ImportProfessor
+Student --> UC_ViewSchedule
+Student --> UC_CalcAvailable
+
+UC_ImportStudent ..> UC_SelectCSV : <<include>>
+UC_ImportProfessor ..> UC_SelectCSV : <<include>>
+UC_ViewSchedule ..> UC_ShowWeekView : <<include>>
+
+' Always run validation before add/import
+UC_AddPersonal ..> UC_Validation : <<include>>
+UC_ImportStudent ..> UC_Validation : <<include>>
+UC_ImportProfessor ..> UC_Validation : <<include>>
+
+' Conditional extensions
+UC_ShowDetails ..> UC_ViewSchedule : <<extend>>
+UC_DeleteSchedule ..> UC_ViewSchedule : <<extend>>
+UC_OpenMailClient ..> UC_CalcAvailable : <<extend>>
+ 
+
+note right of UC_Validation
+Always runs before add/import; checks overlap and data consistency
+end note
+
+ 
+
+note right of UC_ShowDetails
+Double-click an event in weekly view to see details
+end note
+
+note right of UC_DeleteSchedule
+Right-click an event and choose "Delete"
+end note
+
+note right of UC_OpenMailClient
+Double-click teacher email to open the default mail client
+end note
+
+@enduml

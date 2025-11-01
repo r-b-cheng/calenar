@@ -1,0 +1,40 @@
+@startuml
+title Import Professor Office Hours
+
+actor Student
+participant MainWindow
+participant ImportProfessorDialog as ImportDialog
+participant FileParser
+participant DataManager
+
+Student -> MainWindow : click "Import Professor Hours"
+activate MainWindow
+MainWindow -> ImportDialog : open()
+activate ImportDialog
+ImportDialog -> Student : ask for CSV path
+Student --> ImportDialog : browse and confirm
+ImportDialog --> MainWindow : accepted + filePath
+deactivate ImportDialog
+alt no file selected
+  MainWindow -> MainWindow : show "Select a CSV file"
+else file selected
+  MainWindow -> FileParser : parseProfessorsCsv(filePath)
+  activate FileParser
+  alt parse succeeded
+    FileParser --> MainWindow : imported professors
+    deactivate FileParser
+    loop each imported professor
+      MainWindow -> DataManager : upsertProfessor(prof)
+      activate DataManager
+      deactivate DataManager
+    end
+    MainWindow -> MainWindow : save professor data
+  else parser threw error
+    FileParser --> MainWindow : exception
+    deactivate FileParser
+    MainWindow -> MainWindow : show import error
+  end
+end
+deactivate MainWindow
+
+@enduml

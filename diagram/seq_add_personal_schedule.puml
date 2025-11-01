@@ -1,0 +1,38 @@
+@startuml
+title Add Personal Schedule 
+
+actor Student
+participant MainWindow
+participant AddEventDialog as Form
+participant DataManager
+
+Student -> MainWindow : 点击"添加日程"
+activate MainWindow
+
+MainWindow -> Form : 创建并显示表单
+activate Form
+Form -> Student : 展示表单
+Student --> Form : 填写并确认
+Form --> MainWindow : 返回事件数据
+deactivate Form
+
+MainWindow -> DataManager : 检查冲突(事件)
+activate DataManager
+DataManager -> DataManager : 使用Schedule::addEventSafely验证
+DataManager --> MainWindow : 返回校验结果(ok/冲突, errorMsg)
+
+alt 无冲突
+  MainWindow -> DataManager : 添加事件(提交)
+  DataManager -> DataManager : 写入用户日程并保存
+  DataManager --> MainWindow : 添加成功
+deactivate DataManager
+  MainWindow -> MainWindow : 显示成功提示
+else 有冲突
+  MainWindow -> MainWindow : 显示冲突错误
+end
+
+
+deactivate MainWindow
+
+@enduml
+

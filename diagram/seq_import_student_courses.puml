@@ -1,0 +1,43 @@
+@startuml
+title Import Student Courses
+
+actor Student
+participant MainWindow
+participant ImportStudentCoursesDialog as ImportDialog
+participant FileParser
+participant DataManager
+
+Student -> MainWindow : click "Import Student Courses"
+activate MainWindow
+MainWindow -> ImportDialog : open()
+activate ImportDialog
+ImportDialog -> Student : ask for CSV path
+Student --> ImportDialog : browse and confirm
+ImportDialog --> MainWindow : accepted + filePath
+deactivate ImportDialog
+alt no file selected
+  MainWindow -> MainWindow : show "Select a CSV file"
+else file selected
+  MainWindow -> FileParser : parseCsv(filePath)
+  activate FileParser
+  alt parse succeeded
+    FileParser --> MainWindow : imported events
+    deactivate FileParser
+    loop each imported event
+      MainWindow -> DataManager : tryAddCourse(event)
+      activate DataManager
+      opt validation failed
+        DataManager --> MainWindow : reject with reason
+      end
+      deactivate DataManager
+    end
+    MainWindow -> MainWindow : refresh schedule + save
+  else parser threw error
+    FileParser --> MainWindow : exception
+    deactivate FileParser
+    MainWindow -> MainWindow : show import error
+  end
+end
+deactivate MainWindow
+
+@enduml

@@ -1,0 +1,128 @@
+@startuml
+title Class Diagram: Modules + Datastructure
+
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam classAttributeIconSize 0
+
+package "datastructure" {
+
+
+  class TimeSlot {
+    - std::chrono::system_clock::time_point startTime
+    - std::chrono::system_clock::time_point endTime
+    - bool isCourse
+    + isOverlappingWith(other: TimeSlot) : bool
+    + durationMinutes() : long long
+    + getIsCourse() : bool
+    + getStartTime() : std::chrono::system_clock::time_point
+    + getEndTime() : std::chrono::system_clock::time_point
+    + setStartTime(start: std::chrono::system_clock::time_point) : void
+    + setEndTime(end: std::chrono::system_clock::time_point) : void
+    + setIsCourse(course: bool) : void
+  }
+
+  class ScheduleEvent {
+    - int id
+    - std::string eventName
+    - std::string location
+    - std::string description
+    - int weekday
+    - TimeSlot timeSlot
+    + getId() : int
+    + getEventName() : std::string
+    + getLocation() : std::string
+    + getDescription() : std::string
+    + getWeekday() : int
+    + getTimeSlot() : TimeSlot
+    + setId(eventId: int) : void
+    + setEventName(name: std::string) : void
+    + setLocation(loc: std::string) : void
+    + setDescription(desc: std::string) : void
+    + setWeekday(day: int) : void
+    + setTimeSlot(slot: TimeSlot) : void
+    + getWeekOffset() : int
+  }
+
+  class Schedule {
+    - std::vector<ScheduleEvent> events
+    + addEvent(event: ScheduleEvent) : void
+    + addEventSafely(event: ScheduleEvent, errorMsg: std::string) : bool
+    + removeEvent(eventId: int) : bool
+    + getEventsForDate(date: std::chrono::system_clock::time_point) : std::vector<ScheduleEvent>
+    + getEventsForWeek(weekOffset: int) : const std::vector<ScheduleEvent>&
+    + getEventsInRange(start: std::chrono::system_clock::time_point, end: std::chrono::system_clock::time_point) : std::vector<ScheduleEvent>
+    + operator+(another: Schedule) : Schedule
+    + getAllEvents() : const std::vector<ScheduleEvent>&
+    + clear() : void
+  }
+
+  class Professor {
+    - std::string name
+    - std::string email
+    - Schedule officeHours
+    + getEmail() : std::string
+    + getName() : std::string
+    + getOfficeHours() : Schedule
+    + getOfficeHours() : const Schedule
+    + setName(profName: std::string) : void
+    + setEmail(profEmail: std::string) : void
+  }
+
+  class User {
+    - std::string name
+    - Schedule personalSchedule
+    - Schedule courses
+    + getName() : std::string
+    + getPersonalScheduleForWeek(phase: int) : const Schedule
+    + getCourses() : Schedule
+    + getCourses() : const Schedule
+    + getPersonalSchedule() : Schedule
+    + getPersonalSchedule() : const Schedule
+    + setName(userName: std::string) : void
+  }
+}
+
+package "modules" {
+  class DataManager {
+    - User user
+    - std::vector<Professor> professors
+    + saveUserData(userData: const User, filePath: std::string) : bool
+    + loadUserData(userData: User&, filePath: std::string) : bool
+    + getUser() : User&
+    + getUser() : const User&
+    + loadProfessorsData(filePath: std::string) : bool
+    + getProfessors() : const std::vector<Professor>&
+    + getProfessorByName(name: std::string) : Professor
+    + saveProfessorsData(profs: const std::vector<Professor>&, filePath: std::string) : bool
+  }
+
+  class FileParser {
+    + parseCsv(filePath: std::string) : Schedule
+    + parseProfessorsCsv(filePath: std::string) : std::vector<Professor>
+  }
+
+  class SchedulerLogic {
+    + findAvailableSlots(studentSchedule: const Schedule, officeHour: const Schedule) : std::vector<TimeSlot>
+  }
+}
+
+' =========================
+' Relationships with Multiplicity
+' =========================
+datastructure.Schedule "1" *-- "0..*" datastructure.ScheduleEvent : events
+datastructure.ScheduleEvent "1" *-- "1" datastructure.TimeSlot : timeSlot
+datastructure.Professor "1" *-- "1" datastructure.Schedule : officeHours
+datastructure.User "1" *-- "1" datastructure.Schedule : personalSchedule
+datastructure.User "1" *-- "1" datastructure.Schedule : courses
+
+modules.DataManager "1" *-- "1" datastructure.User : user
+modules.DataManager "1" *-- "0..*" datastructure.Professor : professors
+
+modules.FileParser ..> datastructure.Schedule : parseCsv returns
+modules.FileParser ..> datastructure.Professor : parseProfessorsCsv returns
+
+modules.SchedulerLogic ..> datastructure.Schedule : uses (student+office)
+modules.SchedulerLogic ..> datastructure.TimeSlot : returns
+
+@enduml
